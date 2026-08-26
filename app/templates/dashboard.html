@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ app_name }} | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">{{ app_name }}</a>
+      <nav aria-label="Primary navigation">
+        <a class="active" href="/">Dashboard</a>
+        <span>Products</span><span>Inventory</span><span>Orders</span><span>Suppliers</span><span>Analytics</span>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Operations overview</p>
+        <h1>Your inventory command center</h1>
+        <p>The first foundation is ready. Products, inventory, orders, and analytics will be added in the next phases.</p>
+      </section>
+      <section class="metrics" aria-label="Dashboard metrics">
+        <article><span>Products</span><strong>—</strong><small>Coming in Phase 2</small></article>
+        <article><span>Orders</span><strong>—</strong><small>Coming in Phase 3</small></article>
+        <article><span>Revenue</span><strong>—</strong><small>Coming in Phase 4</small></article>
+        <article><span>Low stock</span><strong>—</strong><small>Coming in Phase 2</small></article>
+      </section>
+      <section class="next-step">
+        <h2>System status</h2>
+        <p><span class="status-dot"></span> Application is online. Verify the service at <a href="/health">/health</a>.</p>
+      </section>
+    </main>
+  </body>
+</html>
+

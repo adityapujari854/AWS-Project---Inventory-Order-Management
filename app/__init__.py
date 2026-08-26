@@ -1,0 +1,2 @@
+"""InventoryHub application package."""
+
