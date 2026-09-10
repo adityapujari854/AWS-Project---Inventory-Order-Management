@@ -10,6 +10,9 @@ from fastapi.templating import Jinja2Templates
 
 from app.config import get_settings
 from app.database import Base, engine
+from app.models import inventory, product  # noqa: F401 - registers SQLAlchemy models before table creation
+from app.routes import inventory as inventory_routes
+from app.routes import products as product_routes
 
 settings = get_settings()
 logging.basicConfig(
@@ -31,6 +34,8 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+app.include_router(product_routes.router)
+app.include_router(inventory_routes.router)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -50,4 +55,3 @@ async def unhandled_error_handler(_: Request, exc: Exception) -> JSONResponse:
     """Log unexpected failures without exposing internal details to callers."""
     logger.exception("Unhandled application error", exc_info=exc)
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
-

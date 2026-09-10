@@ -4,7 +4,7 @@ An inventory and order management platform built locally with FastAPI, then depl
 
 ## Current milestone
 
-Phase 1 — Local application foundation: FastAPI application, environment-based configuration, SQLAlchemy connection layer, starter dashboard, health check, logging, and tests.
+Phase 2 — Product and inventory module: product APIs, stock-in/out/adjustments, low-stock detection, archive protection, and immutable movement history.
 
 ## Local setup
 
@@ -18,8 +18,7 @@ SQLite is the default for the foundation. Set `DATABASE_URL` to a MySQL SQLAlche
 
 ## Planned milestones
 
-1. Product and inventory management
-2. Orders and suppliers
-3. Dashboard analytics
-4. Authentication, S3 image storage, and optional AI advisor
-5. AWS network, compute, database, load balancing, monitoring, and CloudFormation
+1. Orders and suppliers
+2. Dashboard analytics
+3. Authentication, S3 image storage, and optional AI advisor
+4. AWS network, compute, database, load balancing, monitoring, and CloudFormation
