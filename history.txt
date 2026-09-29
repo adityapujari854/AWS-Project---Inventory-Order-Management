@@ -53,3 +53,4 @@
 2026-09-27T08:44:00.000Z | Aditya pujari | adityapujari542@gmail.com | Add validation
 2026-09-27T14:23:00.000Z | Aditya pujari | adityapujari542@gmail.com | Fix typo
 2026-09-27T18:35:00.000Z | Aditya pujari | adityapujari542@gmail.com | Add tests
+2026-09-29T18:40:00.000Z | Aditya pujari | adityapujari542@gmail.com | Update documentation
