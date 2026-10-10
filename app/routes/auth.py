@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
+from app.config import get_settings
 from app.database import get_db
 from app.security import (
     authenticate_admin,
@@ -18,7 +19,7 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 
 def _login_template(request: Request, error: str | None = None) -> HTMLResponse:
     templates = request.app.state.templates
-    return templates.TemplateResponse(request, "login.html", {"app_name": "InventoryHub", "error": error})
+    return templates.TemplateResponse(request, "login.html", {"app_name": get_settings().app_name, "error": error})
 
 
 @router.get("/login", response_class=HTMLResponse)

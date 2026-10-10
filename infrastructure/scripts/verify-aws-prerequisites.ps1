@@ -7,4 +7,4 @@ aws ec2 describe-subnets --region $Region --subnet-ids subnet-0e209d2de126a7038 
 aws ec2 describe-security-groups --region $Region --group-ids sg-01347a74108253023 --output json
 aws iam get-instance-profile --instance-profile-name InventoryHub-EC2-SSM-Role --output json
 aws iam list-attached-role-policies --role-name InventoryHub-EC2-SSM-Role --output json
-aws ec2 describe-images --region $Region --image-ids ami-0f19324397f53458f --output table
+aws ssm get-parameter --region $Region --name /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 --output table

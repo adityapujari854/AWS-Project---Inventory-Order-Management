@@ -1,6 +1,6 @@
 # Catalogue image sources
 
-Images below were downloaded and content-validated from Wikimedia Commons.
+The active application manifest deliberately lists only six clearly matched, content-validated Wikimedia Commons images. This file retains download attribution for all locally retained assets, but InventoryHub does not use an asset unless it is listed in `manifest.json` after a separate match-quality review.
 
 - `ACC-761.jpg` — Wireless Presenter (representative); [source page](https://commons.wikimedia.org/?curid=30777786); image: https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/August_LP205R_Wireless_Presenter.jpg/960px-August_LP205R_Wireless_Presenter.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail; author: Katie Chan; licence: CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0)
 - `AUD-501.jpg` — USB Noise-Cancelling Headset (representative); [source page](https://commons.wikimedia.org/?curid=41547264); image: https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Battery_amplifier_PVE2_with_a_headset_and_a_capacitor_microphone_by_Telefunken%2C_1943._%2815301005687%29.jpg/960px-Battery_amplifier_PVE2_with_a_headset_and_a_capacitor_microphone_by_Telefunken%2C_1943._%2815301005687%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail; author: Archives of the Finnish Broadcasting Company Yle; licence: Public domain (See source page)

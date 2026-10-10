@@ -1,6 +1,6 @@
 # InventoryHub EC2 deployment notes
 
-The EC2 template is a preparation artifact only. It uses the existing VPC `vpc-01ce071104980ab9a`, subnet `subnet-0e209d2de126a7038`, and web security group `sg-01347a74108253023`. It creates one t3.small, one encrypted 20 GiB gp3 root volume, and one temporary public IPv4 address when executed. It creates no VPC, IAM role/profile, RDS, ALB, S3 bucket, certificate, or DNS record.
+The EC2 template is a preparation artifact only. It accepts reviewed existing VPC, public-subnet, security-group, and instance-profile parameters. When executed, it creates one t3.small, one encrypted 20 GiB gp3 root volume, and one temporary public IPv4 address. It creates no VPC, IAM role/profile, RDS, ALB, S3 bucket, certificate, or DNS record.
 
 ## Application decision
 

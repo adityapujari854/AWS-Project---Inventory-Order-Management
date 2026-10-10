@@ -50,8 +50,10 @@ th { color: #69738a; font-size: .75rem; letter-spacing: .04em; text-transform: u
 .catalogue-toolbar, .product-form { align-items: end; display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.25rem 0; }.catalogue-toolbar input, .catalogue-toolbar select, .product-form input, .product-form select { border: 1px solid #cbd3e3; border-radius: .45rem; font: inherit; min-height: 2.5rem; padding: .55rem; }.catalogue-toolbar input { min-width: 15rem; }.product-form { background: #fff; border: 1px solid #dfe5ef; border-radius: 1rem; padding: 1rem; }.product-form label { color: #39445c; display: grid; font-size: .8rem; font-weight: 700; gap: .35rem; min-width: 10rem; }
 @media (max-width: 720px) { .topbar { align-items: flex-start; flex-direction: column; gap: 1rem; padding: 1.25rem 2rem; } .account-menu { margin-left: 0; } main { padding: 3rem 1.25rem; } .metrics, .dashboard-grid, .advisor-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .chart-panel { grid-column: span 2; } .login-shell { gap: 2rem; grid-template-columns: 1fr; } .advisor-card dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 440px) { .metrics, .dashboard-grid, .product-image-grid, .advisor-summary { grid-template-columns: 1fr; } .chart-panel { grid-column: auto; } .advisor-card dl { grid-template-columns: 1fr; } .advisor-card dl div { border-left: 0; padding-left: 0; } }
-.product-thumb img, .inline-product-image { object-fit: contain; }
-.inline-product-image { background: #e9edfa; border-radius: .45rem; display: block; height: 3rem; width: 3rem; }
+.product-thumb img { object-fit: contain; }
+.inventory-product-image, .order-product-image { background: #e9edfa; border-radius: .45rem; display: block; object-fit: contain; }
+.inventory-product-image { flex: 0 0 48px; height: 48px; width: 48px; }
+.order-product-image { flex: 0 0 40px; height: 40px; width: 40px; }
 .product-cell, .order-product { align-items: center; display: inline-flex; gap: .65rem; text-align: left; }
 .order-product { margin: .15rem .4rem .15rem 0; }
 .analytics-chart-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 1.25rem 0; }

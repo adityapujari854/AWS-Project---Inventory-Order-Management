@@ -24,7 +24,7 @@ OUTPUT = Path("app/static/images/products")
 MANIFEST = OUTPUT / "manifest.json"
 SOURCES = Path("SOURCES.md")
 USER_AGENT = "InventoryHubCatalogueImageSeeder/3.0 (local catalogue maintenance)"
-MIN_DELAY_SECONDS = 2
+MIN_DELAY_SECONDS = 4
 MAX_ATTEMPTS = 5
 ACCEPTED_LICENSES = ("CC0", "CC BY", "CC-BY", "PUBLIC DOMAIN", "PD")
 REJECTED_LICENSE_TERMS = ("NC", "ND", "ALL RIGHTS", "FAIR USE", "NONFREE")
@@ -49,6 +49,7 @@ SEARCH_TERMS = {
     "AUD-764": "conference room speakerphone", "OFF-765": "cable management",
 }
 REJECTED_TITLE_TERMS = ("pdf", "panorama", "glitched", "garbled", "defective", "lighter", "failure")
+GENERIC_SEARCH_TERMS = {"computer", "wireless", "usb", "office", "room", "audio", "camera", "display", "network"}
 
 
 def text_value(metadata: dict, key: str) -> str:
@@ -115,7 +116,10 @@ def relevant(page_title: str, search_terms: str) -> bool:
     title = page_title.lower()
     if any(term in title for term in REJECTED_TITLE_TERMS):
         return False
-    anchors = [word.lower() for word in re.findall(r"[a-zA-Z0-9]{3,}", search_terms)]
+    anchors = [
+        word.lower() for word in re.findall(r"[a-zA-Z0-9]{3,}", search_terms)
+        if word.lower() not in GENERIC_SEARCH_TERMS
+    ]
     return any(anchor in title for anchor in anchors)
 
 
