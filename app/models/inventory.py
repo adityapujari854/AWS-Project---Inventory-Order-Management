@@ -13,6 +13,8 @@ class MovementType(str, Enum):
     STOCK_IN = "stock_in"
     STOCK_OUT = "stock_out"
     ADJUSTMENT = "adjustment"
+    ORDER_OUT = "order_out"
+    ORDER_RETURN = "order_return"
 
 
 class InventoryMovement(Base):

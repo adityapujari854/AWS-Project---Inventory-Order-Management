@@ -10,8 +10,9 @@ from app.models.product import Product, ProductStatus
 from app.routes.products import get_product_or_404
 from app.schemas.inventory import InventoryMovementRead, StockAdjustment, StockChange
 from app.schemas.product import ProductRead
+from app.security import require_admin, verify_csrf
 
-router = APIRouter(prefix="/api/products/{product_id}/inventory", tags=["inventory"])
+router = APIRouter(prefix="/api/products/{product_id}/inventory", tags=["inventory"], dependencies=[Depends(require_admin), Depends(verify_csrf)])
 
 
 def apply_movement(
