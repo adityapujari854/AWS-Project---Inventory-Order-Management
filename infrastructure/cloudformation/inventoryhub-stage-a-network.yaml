@@ -1,0 +1,191 @@
+
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >-
+  InventoryHub Stage A networking: one public subnet, Internet Gateway,
+  routing, and a web-facing security group for Nginx.
+  No EC2, RDS, ALB, NAT Gateway, Route 53, monitoring, or S3 resources.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: inventoryhub
+    AllowedPattern: "[a-z0-9-]+"
+    Description: Lowercase project label.
+
+  EnvironmentName:
+    Type: String
+    Default: stage-a
+    AllowedPattern: "[a-z0-9-]+"
+    Description: Environment label.
+
+  VpcCidr:
+    Type: String
+    Default: 10.42.0.0/16
+    Description: VPC CIDR range.
+
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.42.0.0/24
+    Description: Public subnet CIDR range.
+
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for the public subnet.
+
+  EnableSshAccess:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Keep false when using Systems Manager Session Manager.
+
+  AdminSshCidr:
+    Type: String
+    Default: 127.0.0.1/32
+    Description: Used only if temporary SSH access is explicitly enabled.
+
+Conditions:
+  CreateSshIngress: !Equals
+    - !Ref EnableSshAccess
+    - "true"
+
+Resources:
+  StageAVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-vpc"
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref EnvironmentName
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-igw"
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref StageAVpc
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone
+      CidrBlock: !Ref PublicSubnetCidr
+      MapPublicIpOnLaunch: true
+      VpcId: !Ref StageAVpc
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-public-a"
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref StageAVpc
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-public-rt"
+
+  DefaultInternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet
+
+  StageAApplicationSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Temporary Stage A InventoryHub application access.
+      GroupName: !Sub "${ProjectName}-${EnvironmentName}-app"
+
+      SecurityGroupIngress:
+        - Description: Public HTTP traffic to Nginx.
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+        - Description: Public HTTPS traffic to Nginx.
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+      SecurityGroupEgress:
+        - Description: HTTP package repositories.
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+        - Description: HTTPS AWS APIs, SSM, and package repositories.
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+        - Description: DNS lookup through VPC resolver.
+          IpProtocol: udp
+          FromPort: 53
+          ToPort: 53
+          CidrIp: !Ref VpcCidr
+
+        - Description: DNS fallback through VPC resolver.
+          IpProtocol: tcp
+          FromPort: 53
+          ToPort: 53
+          CidrIp: !Ref VpcCidr
+
+      VpcId: !Ref StageAVpc
+
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-app-sg"
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref EnvironmentName
+
+  OptionalRestrictedSshIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: CreateSshIngress
+    Properties:
+      Description: Temporary restricted SSH access.
+      GroupId: !Ref StageAApplicationSecurityGroup
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: !Ref AdminSshCidr
+
+Outputs:
+  VpcId:
+    Description: InventoryHub VPC ID.
+    Value: !Ref StageAVpc
+
+  PublicSubnetId:
+    Description: InventoryHub public subnet ID.
+    Value: !Ref PublicSubnet
+
+  ApplicationSecurityGroupId:
+    Description: Security group for the EC2 application instance.
+    Value: !Ref StageAApplicationSecurityGroup

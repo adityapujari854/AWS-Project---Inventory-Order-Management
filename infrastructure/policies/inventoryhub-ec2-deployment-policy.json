@@ -1,0 +1,97 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadInventoryHubDeploymentState",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeImages",
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeVolumes",
+        "ec2:DescribeVpcs",
+        "ec2:DescribeAvailabilityZones",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStackResources",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:GetTemplate",
+        "cloudformation:ValidateTemplate"
+      ],
+      "Resource": "*",
+      "Condition": {"StringEquals": {"aws:RequestedRegion": "ap-south-1"}}
+    },
+    {
+      "Sid": "ReadOnlyAmazonLinuxAmiParameter",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameters",
+      "Resource": "arn:aws:ssm:ap-south-1::parameter/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+    },
+    {
+      "Sid": "ReadOnlyInventoryHubInstanceProfile",
+      "Effect": "Allow",
+      "Action": "iam:GetInstanceProfile",
+      "Resource": "arn:aws:iam::632872792139:instance-profile/InventoryHub-EC2-SSM-Role"
+    },
+    {
+      "Sid": "ReadOnlyInventoryHubSsmRole",
+      "Effect": "Allow",
+      "Action": ["iam:GetRole", "iam:ListAttachedRolePolicies"],
+      "Resource": "arn:aws:iam::632872792139:role/InventoryHub-EC2-SSM-Role"
+    },
+    {
+      "Sid": "PassOnlyInventoryHubSsmRoleToEc2",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::632872792139:role/InventoryHub-EC2-SSM-Role",
+      "Condition": {"StringEquals": {"iam:PassedToService": "ec2.amazonaws.com"}}
+    },
+    {
+      "Sid": "RunOnlyTaggedInventoryHubInstance",
+      "Effect": "Allow",
+      "Action": "ec2:RunInstances",
+      "Resource": [
+        "arn:aws:ec2:ap-south-1::image/*",
+        "arn:aws:ec2:ap-south-1:632872792139:subnet/subnet-0e209d2de126a7038",
+        "arn:aws:ec2:ap-south-1:632872792139:security-group/sg-01347a74108253023",
+        "arn:aws:ec2:ap-south-1:632872792139:network-interface/*",
+        "arn:aws:ec2:ap-south-1:632872792139:volume/*",
+        "arn:aws:ec2:ap-south-1:632872792139:instance/*"
+      ],
+      "Condition": {
+        "StringEquals": {"aws:RequestTag/Project": "inventoryhub", "aws:RequestTag/Environment": "stage-a"},
+        "ForAllValues:StringEquals": {"aws:TagKeys": ["Name", "Project", "Environment", "ManagedBy", "CleanupRequired"]}
+      }
+    },
+    {
+      "Sid": "ManageOnlyTaggedInventoryHubInstances",
+      "Effect": "Allow",
+      "Action": ["ec2:StartInstances", "ec2:StopInstances", "ec2:RebootInstances", "ec2:TerminateInstances"],
+      "Resource": "arn:aws:ec2:ap-south-1:632872792139:instance/*",
+      "Condition": {"StringEquals": {"aws:ResourceTag/Project": "inventoryhub", "aws:ResourceTag/Environment": "stage-a"}}
+    },
+    {
+      "Sid": "TagOnlyInventoryHubRunResources",
+      "Effect": "Allow",
+      "Action": "ec2:CreateTags",
+      "Resource": [
+        "arn:aws:ec2:ap-south-1:632872792139:instance/*",
+        "arn:aws:ec2:ap-south-1:632872792139:volume/*",
+        "arn:aws:ec2:ap-south-1:632872792139:network-interface/*"
+      ],
+      "Condition": {"StringEquals": {"ec2:CreateAction": "RunInstances"}}
+    },
+    {
+      "Sid": "CloudFormationForTaggedEc2StackOnly",
+      "Effect": "Allow",
+      "Action": ["cloudformation:CreateStack", "cloudformation:UpdateStack", "cloudformation:CreateChangeSet", "cloudformation:DeleteChangeSet", "cloudformation:ExecuteChangeSet"],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {"aws:RequestedRegion": "ap-south-1", "aws:RequestTag/Project": "inventoryhub", "aws:RequestTag/Environment": "stage-a"},
+        "ForAllValues:StringEquals": {"aws:TagKeys": ["Project", "Environment", "ManagedBy"]}
+      }
+    }
+  ]
+}
