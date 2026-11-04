@@ -1,0 +1,20 @@
+[Unit]
+Description=InventoryHub FastAPI service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=inventoryhub
+Group=inventoryhub
+WorkingDirectory=/opt/inventoryhub/app
+EnvironmentFile=/etc/inventoryhub/inventoryhub.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/inventoryhub/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  InventoryHub Stage A EC2 only. Uses an existing public subnet, security group,
+  and instance profile. Does not create networking, IAM, RDS, ALB, S3, or TLS resources.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: inventoryhub
+  EnvironmentName:
+    Type: String
+    Default: stage-a
+  ExistingVpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Existing InventoryHub VPC; retained for review and output only.
+  ExistingPublicSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Existing public subnet that assigns public IPv4 addresses.
+  ExistingApplicationSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Existing security group allowing only Nginx HTTP/HTTPS ingress.
+  ExistingInstanceProfileName:
+    Type: String
+    Description: Existing EC2 instance profile containing InventoryHub-EC2-SSM-Role.
+  AmazonLinuxAmi:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: Public SSM parameter for the current Amazon Linux 2023 x86_64 AMI.
+  InstanceType:
+    Type: String
+    Default: t3.small
+    AllowedValues: [t3.small]
+  RootVolumeGiB:
+    Type: Number
+    Default: 20
+    MinValue: 20
+    MaxValue: 30
+
+Resources:
+  InventoryHubInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmazonLinuxAmi
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref ExistingInstanceProfileName
+      CreditSpecification:
+        CPUCredits: standard
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+        HttpPutResponseHopLimit: 1
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          GroupSet: [!Ref ExistingApplicationSecurityGroupId]
+          SubnetId: !Ref ExistingPublicSubnetId
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            VolumeSize: !Ref RootVolumeGiB
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-ec2"
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: ManagedBy
+          Value: cloudformation
+        - Key: CleanupRequired
+          Value: "true"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+          dnf install -y python3.11 nginx git rsync
+          id inventoryhub >/dev/null 2>&1 || useradd --system --create-home --shell /sbin/nologin inventoryhub
+          install -d -o inventoryhub -g inventoryhub -m 0750 /opt/inventoryhub/app /opt/inventoryhub/venv /opt/inventoryhub/releases
+          systemctl enable nginx
+          echo "Base OS preparation completed. Deploy a reviewed application release through Session Manager."
+
+Outputs:
+  InstanceId:
+    Description: Stage A EC2 instance ID.
+    Value: !Ref InventoryHubInstance
+  PublicIp:
+    Description: Temporary public IPv4 address; changes after stop/start unless an Elastic IP is deliberately added later.
+    Value: !GetAtt InventoryHubInstance.PublicIp
+  PublicDnsName:
+    Description: Temporary public DNS name.
+    Value: !GetAtt InventoryHubInstance.PublicDnsName
+  VpcId:
+    Description: Existing VPC used by this instance.
+    Value: !Ref ExistingVpcId
