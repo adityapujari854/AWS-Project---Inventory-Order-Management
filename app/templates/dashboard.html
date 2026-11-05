@@ -4,33 +4,46 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ app_name }} | Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+    <script src="{{ url_for('static', path='js/dashboard.js') }}" defer></script>
   </head>
   <body>
     <header class="topbar">
       <a class="brand" href="/">{{ app_name }}</a>
       <nav aria-label="Primary navigation">
         <a class="active" href="/">Dashboard</a>
-        <span>Products</span><span>Inventory</span><span>Orders</span><span>Suppliers</span><span>Analytics</span>
+        <a href="/products">Products</a><a href="/inventory">Inventory</a><a href="/orders">Orders</a><a href="/suppliers">Suppliers</a><a href="/analytics">Analytics</a><a href="/advisor">Advisor</a>
       </nav>
+      <div class="account-menu"><span>{{ admin_username }}</span><form method="post" action="/auth/logout"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit">Sign out</button></form></div>
     </header>
     <main>
       <section class="hero">
         <p class="eyebrow">Operations overview</p>
         <h1>Your inventory command center</h1>
-        <p>The first foundation is ready. Products, inventory, orders, and analytics will be added in the next phases.</p>
+        <p>Live product, inventory, order, and revenue data for day-to-day operations.</p>
       </section>
       <section class="metrics" aria-label="Dashboard metrics">
-        <article><span>Products</span><strong>—</strong><small>Coming in Phase 2</small></article>
-        <article><span>Orders</span><strong>—</strong><small>Coming in Phase 3</small></article>
-        <article><span>Revenue</span><strong>—</strong><small>Coming in Phase 4</small></article>
-        <article><span>Low stock</span><strong>—</strong><small>Coming in Phase 2</small></article>
+        <article><span>Active products</span><strong id="metric-products" data-loading>Loading…</strong><small>Available catalog</small></article>
+        <article><span>Total orders</span><strong id="metric-orders" data-loading>Loading…</strong><small>All order statuses</small></article>
+        <article><span>Recognized revenue</span><strong id="metric-revenue" data-loading>Loading…</strong><small>Shipped and delivered orders</small></article>
+        <article><span>Low stock</span><strong id="metric-low-stock" data-loading>Loading…</strong><small>At or below threshold</small></article>
       </section>
-      <section class="next-step">
-        <h2>System status</h2>
-        <p><span class="status-dot"></span> Application is online. Verify the service at <a href="/health">/health</a>.</p>
+      <section class="dashboard-grid">
+        <article class="panel chart-panel"><h2>Monthly revenue and orders</h2><div class="chart-wrap"><canvas id="sales-trend-chart"></canvas></div></article>
+        <article class="panel chart-panel"><h2>Sales by category</h2><div class="chart-wrap"><canvas id="category-sales-chart"></canvas></div></article>
+        <article class="panel chart-panel"><h2>Stock distribution</h2><div class="chart-wrap"><canvas id="stock-distribution-chart"></canvas></div></article>
+        <article class="panel"><h2>Inventory summary</h2><strong class="summary-value" id="inventory-value" data-loading>Loading…</strong><p id="inventory-alert-summary">Checking inventory…</p></article>
+        <article class="panel" id="status-container"><h2>Order status</h2><ul class="summary-list" id="status-list"><li class="empty-state">Loading…</li></ul></article>
+        <article class="panel" id="best-sellers-container"><h2>Best-selling products</h2><ul class="summary-list" id="best-sellers"><li class="empty-state">Loading…</li></ul></article>
+      </section>
+      <section class="panel table-panel" id="recent-orders-container">
+        <h2>Recent orders</h2>
+        <div class="table-scroll"><table><thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th></tr></thead><tbody id="recent-orders-body"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody></table></div>
       </section>
     </main>
+    <footer class="brand-footer">InventoryHub · Built by Aditya</footer>
   </body>
 </html>
 
