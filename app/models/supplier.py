@@ -37,4 +37,3 @@ class SupplierProduct(Base):
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), index=True)
 
     supplier: Mapped["Supplier"] = relationship(back_populates="supplied_products")
-

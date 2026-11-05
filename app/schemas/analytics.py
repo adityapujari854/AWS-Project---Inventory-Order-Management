@@ -76,4 +76,3 @@ class DashboardAnalytics(BaseModel):
     sales_by_category: list[CategorySales]
     stock_distribution: StockDistribution
     revenue_period_days: int
-

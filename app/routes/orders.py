@@ -68,8 +68,6 @@ def create_order(payload: OrderCreate, db: Session = Depends(get_db)) -> Order:
     order.total = total
     db.commit()
     return get_order_or_404(order.id, db)
-
-
 @router.get("", response_model=list[OrderRead])
 def list_orders(db: Session = Depends(get_db)) -> list[Order]:
     return db.scalars(select(Order).options(selectinload(Order.items)).order_by(Order.created_at.desc(), Order.id.desc())).all()

@@ -66,4 +66,3 @@ def link_supplier_product(supplier_id: int, product_id: int, db: Session = Depen
         raise HTTPException(status_code=409, detail="Supplier is already linked to this product")
     db.add(SupplierProduct(supplier_id=supplier_id, product_id=product_id))
     db.commit()
-

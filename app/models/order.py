@@ -52,4 +52,3 @@ class OrderItem(Base):
     line_total: Mapped[Decimal] = mapped_column(Numeric(12, 2))
 
     order: Mapped["Order"] = relationship(back_populates="items")
-

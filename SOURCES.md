@@ -54,4 +54,3 @@ Images below were downloaded and content-validated from Wikimedia Commons.
 - `WM-001.jpg` — Wireless Mouse (representative); [source page](https://commons.wikimedia.org/?curid=83718308); image: https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/A_black_wireless_computer_mouse.jpg/960px-A_black_wireless_computer_mouse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail; author: Pixloom; licence: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0)
 
 ## Fallback or unavailable products
-
